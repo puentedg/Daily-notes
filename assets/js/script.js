@@ -1,12 +1,4 @@
 
-// FUNCTIONS AND EVENTS
-// function displayDate DONE
-// function displayTimeblocks
-// function storeEvent
-// function retrieveEvent
-// Event Listener createEvent
-// Event Listener save btn
-
 // Variables
 let container = $(".container")
 var timeDisplayEl = $('#currentDay');
@@ -15,12 +7,13 @@ let timeRowEl = $('.row');
 console.log(timeRowEl);
 let userEntry =[];
 
-
+// Function that displays current date and time
 function displayDate() {
     var rightNow = moment().format('MMM DD, YYYY [at] hh:mm:ss a');
     timeDisplayEl.text(rightNow);
   }
 
+//  Function to display timeblocks and changing colors according to current time
 function displayTimeblocks () {
     
     for (let i=0; i<9; i++) {
@@ -48,24 +41,35 @@ function displayTimeblocks () {
     }
 }
 
+// Function that loads the note on local storage
 function loadNote () {
-    let hourlyNote = JSON.parse(localStorage.getItem("note"))
+    let hourlyNote = JSON.parse(localStorage.getItem("note")) || []
     console.log(hourlyNote);
 
-    if (hourlyNote === null) {
-        return;
-    }
-    userEntry = hourlyNote;
+    console.log(hourlyNote.length)
+    for (let i=0; i<9; i++) {  //for loop going through all the timeblocks to check on notes
+        var time = i+9;
+        var note = `#note${i+1}`
+        var descriptionValue = hourlyNote.find(x => x.time == time);
+        if (descriptionValue) {
+            console.log(descriptionValue)
+            document.querySelector(note).value=descriptionValue.description
+        }  
+    }   
+
 }
 
+// Function that stores the note on local storage
 function storeNote () {
     
     localStorage.setItem("note", JSON.stringify(userEntry));
 }
 
+// Function to save the note
 function saveNote (event){
     console.log(event) 
-
+    userEntry = JSON.parse(localStorage.getItem("note")) || []
+    console.log(userEntry);
     let button = $(event.target);
     let buttonChildren = button.siblings();
     let timeEl = $(this).parent()
@@ -85,16 +89,16 @@ function saveNote (event){
         description: description
     }
     console.log(listNote);
-
+    let oldNote = userEntry.findIndex(x=>x.time==timeAt)
+    console.log(oldNote);
+    if (oldNote!==-1){
+        userEntry.splice(oldNote, 1)
+        
+    }
+    
     userEntry.push(listNote);
-
+    console.log(userEntry);
     storeNote();
-}
-
-function renderNote () {
-    var recentNotes = JSON.parse(localStorage.getItem("note"));
-    // recentNotes=userEntry.val();
-    console.log(recentNotes);
 }
 
 
